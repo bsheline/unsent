@@ -12,7 +12,6 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             nodejs_20
-            nodePackages.npm
             prisma-engines
             openssl
             docker-compose  # for container testing layer
