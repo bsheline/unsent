@@ -63,7 +63,7 @@
 - `libglvnd`
 
 ## Runtime Capabilities
-- GitHub namespace: peanutbutterbulk (git@github.com)
+- GitHub namespace: bsheline (git@github.com)
 - Local Forgejo: forgejo@192.168.200.1:2223
 - When hosting locally use ports 11420—11425
 - `sudo` — full NOPASSWD root access
