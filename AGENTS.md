@@ -28,6 +28,7 @@
 - `uv`
 - `git`
 - `gemini-cli-bin`
+- `jules`
 - `zlib`
 - `gcc`
 
@@ -61,7 +62,8 @@
 - `libglvnd`
 
 ## Runtime Capabilities
-- Git upstream: ssh://forgejo@192.168.200.1:2223/
+- GitHub namespace: peanutbutterbulk (git@github.com)
+- Local Forgejo: forgejo@192.168.200.1:2223
 - When hosting locally use ports 11420—11425
 - `sudo` — full NOPASSWD root access
 - `nix flakes` and `nix-command` enabled 
