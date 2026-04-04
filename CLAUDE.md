@@ -19,6 +19,7 @@
 - `just`
 - `tmux`
 - `openssh`
+- `xdg-utils`
 - `curl`
 - `jq`
 - `python3`
