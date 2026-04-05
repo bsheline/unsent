@@ -36,9 +36,8 @@ model Message {
   id          String   @id @default(cuid())
   matchId     String
   match       Match    @relation(fields: [matchId], references: [id])
-  role        String                              // USER or THEM
+  role        String                            // "USER" or "THEM"
   content     String
   chosen      Boolean  @default(false)          // was this a chosen suggestion?
   createdAt   DateTime @default(now())
 }
-
