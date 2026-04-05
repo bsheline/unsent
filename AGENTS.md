@@ -1,77 +1,5 @@
-# Agent Environment
+# Agent.md
 
-## Pre-installed Tools
-- `gcc-wrapper`
-- `gnumake`
-- `pkg-config-wrapper`
-- `direnv`
-- `nix-direnv`
-- `nil`
-- `nixpkgs-fmt`
-- `nodejs`
-- `pnpm`
-- `bun`
-- `wget`
-- `unzip`
-- `file`
-- `tree`
-- `gh`
-- `just`
-- `tmux`
-- `openssh`
-- `xdg-utils`
-- `curl`
-- `jq`
-- `python3`
-- `chromium`
-- `ripgrep`
-- `fd`
-- `uv`
-- `git`
-- `gemini-cli-bin`
-- `jules`
-- `zlib`
-- `gcc`
-
-## nix-ld Native Libraries (available to unpatched binaries)
-- `gcc`
-- `zlib`
-- `fuse`
-- `icu4c`
-- `nss`
-- `openssl`
-- `curl`
-- `expat`
-- `at-spi2-core`
-- `at-spi2-core`
-- `dbus`
-- `libdrm`
-- `mesa`
-- `libxkbcommon`
-- `libx11`
-- `libxcomposite`
-- `libxdamage`
-- `libxext`
-- `libxfixes`
-- `libxrandr`
-- `libxcb`
-- `gtk+3`
-- `pango`
-- `cairo`
-- `alsa-lib`
-- `cups`
-- `libglvnd`
-
-## Runtime Capabilities
-- GitHub namespace: bsheline (git@github.com)
-- Local Forgejo: forgejo@192.168.200.1:2223
-- When hosting locally use ports 11420—11425
-- `sudo` — full NOPASSWD root access
-- `nix flakes` and `nix-command` enabled 
-- `nix-ld` enabled — pip wheels and pre-compiled binaries work without patching
-- nix build sandbox disabled — `nix build` / `nix develop` work inside container
-- `direnv` + `nix-direnv` — drop `.envrc` for per-project shells
-- `uv` — prefer over pip for Python deps
 ## When to Stop and Ask
 
 Stop, commit whatever is in a working state, and surface the question if:
@@ -103,3 +31,7 @@ Every file opens with 2–5 lines explaining its purpose and, if non-obvious, wh
 
 Defensive. Prefer returning structured errors over exceptions for expected failure modes. Log with enough context to reproduce the failure.
 
+
+## Ignore
+
+Ignore the contents of `orchestration/` directory. It is used to manage the workflow of the agents.
