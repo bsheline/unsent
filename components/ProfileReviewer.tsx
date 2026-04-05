@@ -1,90 +1,81 @@
-import React, { useState } from 'react';
-import { Sparkles, ArrowRight } from 'lucide-react';
+"use client";
 
-interface ProfileReviewerProps {
-  onReview: (bio: string) => Promise<{ suggestions: string[]; critique: string }>;
-}
+import { useState } from "react";
+import { Send, Loader2 } from "lucide-react";
 
-export function ProfileReviewer({ onReview }: ProfileReviewerProps) {
-  const [bio, setBio] = useState('');
-  const [isReviewing, setIsReviewing] = useState(false);
-  const [result, setResult] = useState<{ suggestions: string[]; critique: string } | null>(null);
+export default function ProfileReviewer() {
+  const [bio, setBio] = useState("");
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!bio.trim()) return;
+    if (!bio.trim() || isLoading) return;
 
-    setIsReviewing(true);
+    setIsLoading(true);
+    setFeedback(null);
     try {
-      const data = await onReview(bio);
-      setResult(data);
+      const res = await fetch("/api/profile/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bio }),
+      });
+
+      if (!res.ok) throw new Error("Failed to get review");
+
+      const data = await res.json();
+      setFeedback(data.feedback);
     } catch (error) {
-      console.error('Failed to review profile:', error);
-      // Fallback or error state handling could go here
+      console.error(error);
+      alert("Failed to get profile review. Make sure you are on the PRO plan.");
     } finally {
-      setIsReviewing(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-6">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="bg-indigo-50 border-b border-gray-200 p-4">
-          <h2 className="text-lg font-semibold text-indigo-900 flex items-center gap-2">
-            <Sparkles size={20} className="text-indigo-600" />
-            Bio Reviewer
-          </h2>
-          <p className="text-sm text-indigo-700 mt-1">
-            Paste your current dating app bio and get actionable feedback plus rewrite suggestions.
-          </p>
-        </div>
+    <div className="max-w-2xl mx-auto space-y-8">
+      <div className="bg-white p-6 rounded-xl shadow-sm border">
+        <h2 className="text-xl font-bold mb-4">Profile Bio Review</h2>
+        <p className="text-gray-600 mb-6 text-sm">
+          Paste your current dating app bio below. We'll analyze it for engagement potential, red flags, and suggest improvements.
+        </p>
 
-        <form onSubmit={handleSubmit} className="p-4">
-          <label htmlFor="bio-input" className="block text-sm font-medium text-gray-700 mb-2">
-            Your Current Bio
-          </label>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <textarea
-            id="bio-input"
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            placeholder="I like hiking, dogs, and watching The Office. Looking for someone who doesn't take themselves too seriously..."
-            className="w-full min-h-[120px] p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-y"
-            disabled={isReviewing}
+            placeholder="Paste your bio here..."
+            className="w-full min-h-[150px] p-4 border rounded-lg resize-y focus:ring-2 focus:ring-blue-500 outline-none"
+            disabled={isLoading}
           />
-
-          <div className="mt-4 flex justify-end">
+          <div className="flex justify-end">
             <button
               type="submit"
-              disabled={isReviewing || !bio.trim()}
-              className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              disabled={!bio.trim() || isLoading}
+              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isReviewing ? 'Analyzing...' : 'Review My Bio'}
-              {!isReviewing && <ArrowRight size={16} />}
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  Get Review
+                </>
+              )}
             </button>
           </div>
         </form>
       </div>
 
-      {result && (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="bg-gray-50 border-b border-gray-200 p-4">
-              <h3 className="font-semibold text-gray-900">Feedback</h3>
-            </div>
-            <div className="p-4 text-gray-700 leading-relaxed">
-              {result.critique}
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900 px-1">Suggested Rewrites</h3>
-            <div className="grid gap-4 md:grid-cols-2">
-              {result.suggestions.map((suggestion, idx) => (
-                <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:border-indigo-300 transition-colors">
-                  <p className="text-gray-800 whitespace-pre-wrap">{suggestion}</p>
-                </div>
-              ))}
-            </div>
+      {feedback && (
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-200">
+          <h3 className="font-semibold text-lg mb-4 text-blue-900">Review Feedback</h3>
+          <div className="prose prose-blue max-w-none text-gray-700 whitespace-pre-wrap">
+            {feedback}
           </div>
         </div>
       )}

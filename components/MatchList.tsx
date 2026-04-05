@@ -1,62 +1,142 @@
-import React from 'react';
-import Link from 'next/link';
+"use client";
 
-interface Match {
+import { useState } from "react";
+import Link from "next/link";
+import { Plus, MessageSquare } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+type Match = {
   id: string;
   name: string;
-  platform?: string | null;
+  platform: string | null;
   updatedAt: Date;
-}
+};
 
-interface MatchListProps {
-  matches: Match[];
-}
+export default function MatchList({ initialMatches }: { initialMatches: Match[] }) {
+  const [matches, setMatches] = useState<Match[]>(initialMatches);
+  const [isAdding, setIsAdding] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newPlatform, setNewPlatform] = useState("");
+  const router = useRouter();
 
-export function MatchList({ matches }: MatchListProps) {
-  if (!matches || matches.length === 0) {
-    return (
-      <div className="text-center p-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-        <p className="text-gray-500 mb-2">No matches yet</p>
-        <p className="text-sm text-gray-400">Add a match to start getting reply suggestions</p>
-      </div>
-    );
-  }
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newName) return;
 
-  const getPlatformColor = (platform?: string | null) => {
-    if (!platform) return 'bg-gray-100 text-gray-600';
-    const p = platform.toLowerCase();
-    if (p.includes('hinge')) return 'bg-purple-100 text-purple-800';
-    if (p.includes('bumble')) return 'bg-yellow-100 text-yellow-800';
-    if (p.includes('tinder')) return 'bg-red-100 text-red-800';
-    return 'bg-blue-100 text-blue-800';
+    try {
+      const res = await fetch("/api/matches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newName, platform: newPlatform }),
+      });
+
+      if (!res.ok) throw new Error("Failed to create match");
+
+      const newMatch = await res.json();
+      setMatches([newMatch, ...matches]);
+      setIsAdding(false);
+      setNewName("");
+      setNewPlatform("");
+      router.push(`/app/match/${newMatch.id}`);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to create match");
+    }
   };
 
   return (
-    <div className="space-y-3">
-      {matches.map((match) => (
-        <Link
-          href={`/app/match/${match.id}`}
-          key={match.id}
-          className="block bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-sm transition-all group"
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Your Matches</h1>
+        <button
+          onClick={() => setIsAdding(!isAdding)}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
         >
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                {match.name}
-              </h3>
-              <p className="text-xs text-gray-400 mt-1">
-                Last updated: {new Date(match.updatedAt).toLocaleDateString()}
-              </p>
-            </div>
+          <Plus className="w-4 h-4" />
+          <span>New Match</span>
+        </button>
+      </div>
 
-            {match.platform && (
-              <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${getPlatformColor(match.platform)}`}>
-                {match.platform}
-              </span>
-            )}
+      {isAdding && (
+        <form onSubmit={handleCreate} className="bg-white p-4 rounded-xl shadow-sm border space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder="e.g. Sarah"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Platform (Optional)</label>
+              <input
+                type="text"
+                value={newPlatform}
+                onChange={(e) => setNewPlatform(e.target.value)}
+                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder="e.g. Hinge, Bumble"
+              />
+            </div>
           </div>
-        </Link>
-      ))}
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setIsAdding(false)}
+              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Save & Chat
+            </button>
+          </div>
+        </form>
+      )}
+
+      {matches.length === 0 && !isAdding ? (
+        <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
+          <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <h3 className="text-lg font-medium text-gray-900">No matches yet</h3>
+          <p className="text-gray-500 mt-1">Add your first match to start getting reply suggestions.</p>
+          <button
+            onClick={() => setIsAdding(true)}
+            className="mt-4 text-blue-600 font-medium hover:underline"
+          >
+            Add a match
+          </button>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {matches.map((match) => (
+            <Link
+              key={match.id}
+              href={`/app/match/${match.id}`}
+              className="bg-white p-5 rounded-xl shadow-sm border hover:border-blue-300 hover:shadow-md transition group"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-semibold text-lg group-hover:text-blue-600 transition">
+                  {match.name}
+                </h3>
+                {match.platform && (
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full uppercase tracking-wider font-medium">
+                    {match.platform}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-gray-500">
+                Last active {new Date(match.updatedAt).toLocaleDateString()}
+              </p>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

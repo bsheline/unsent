@@ -1,69 +1,55 @@
-import React, { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+"use client";
 
-interface SuggestionCardProps {
+import { Check, Copy } from "lucide-react";
+import { useState } from "react";
+
+type SuggestionProps = {
   reply: string;
   rationale: string;
   tone: string;
-}
+};
 
-export function SuggestionCard({ reply, rationale, tone }: SuggestionCardProps) {
+export default function SuggestionCard({ reply, rationale, tone }: SuggestionProps) {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(reply);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
-    }
+  const handleCopy = () => {
+    navigator.clipboard.writeText(reply);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const getToneBadgeColor = (toneString: string) => {
-    const t = toneString.toLowerCase();
-    if (t.includes('playful') || t.includes('funny') || t.includes('joke')) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    if (t.includes('direct') || t.includes('straight')) return 'bg-red-100 text-red-800 border-red-200';
-    if (t.includes('warm') || t.includes('friendly') || t.includes('kind')) return 'bg-orange-100 text-orange-800 border-orange-200';
-    if (t.includes('flirty')) return 'bg-pink-100 text-pink-800 border-pink-200';
-    return 'bg-blue-100 text-blue-800 border-blue-200';
+  const getToneColor = (tone: string) => {
+    const t = tone.toLowerCase();
+    if (t.includes('playful')) return 'bg-pink-100 text-pink-700';
+    if (t.includes('direct')) return 'bg-blue-100 text-blue-700';
+    if (t.includes('warm')) return 'bg-orange-100 text-orange-700';
+    return 'bg-gray-100 text-gray-700';
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm transition-all hover:shadow-md">
-      <div className="p-5">
-        <div className="flex justify-between items-start mb-3">
-          <span className={`inline-block px-2.5 py-1 text-xs font-medium rounded-full border ${getToneBadgeColor(tone)}`}>
-            {tone}
-          </span>
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors"
-            aria-label="Copy reply to clipboard"
-          >
-            {copied ? (
-              <>
-                <Check size={16} className="text-green-600" />
-                <span className="text-green-600">Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy size={16} />
-                <span>Copy</span>
-              </>
-            )}
-          </button>
-        </div>
+    <div className="bg-white p-5 rounded-xl shadow-sm border hover:border-blue-300 transition group relative">
+      <div className="flex justify-between items-start mb-3">
+        <span className={`text-xs px-2 py-1 rounded-full font-medium ${getToneColor(tone)}`}>
+          {tone}
+        </span>
+        <button
+          onClick={handleCopy}
+          className="text-gray-400 hover:text-blue-600 transition p-1"
+          title="Copy reply"
+        >
+          {copied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+        </button>
+      </div>
 
-        <div className="mb-4">
-          <p className="text-lg font-medium text-gray-900 leading-relaxed whitespace-pre-wrap">
-            "{reply}"
-          </p>
-        </div>
+      <div className="mb-4">
+        <p className="text-gray-900 font-medium text-lg leading-relaxed">
+          "{reply}"
+        </p>
+      </div>
 
-        <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-600 border border-gray-100">
-          <p><strong>Rationale:</strong> {rationale}</p>
-        </div>
+      <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+        <p className="text-xs text-gray-500 font-medium mb-1 uppercase tracking-wider">Strategy</p>
+        <p className="text-sm text-gray-600">{rationale}</p>
       </div>
     </div>
   );
