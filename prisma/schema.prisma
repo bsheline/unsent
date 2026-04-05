@@ -14,7 +14,8 @@ model User {
   id             String    @id                    // Clerk user ID
   email          String    @unique
   subscriptionId String?
-  plan           Plan      @default(FREE)
+  plan           String    @default("FREE")
+  generationsCount Int     @default(0)
   styleProfile   String?                          // JSON blob, updated from chosen replies
   matches        Match[]
   createdAt      DateTime  @default(now())
@@ -36,18 +37,8 @@ model Message {
   id          String   @id @default(cuid())
   matchId     String
   match       Match    @relation(fields: [matchId], references: [id])
-  role        Role                              // USER or THEM
+  role        String                            // "USER" or "THEM"
   content     String
   chosen      Boolean  @default(false)          // was this a chosen suggestion?
   createdAt   DateTime @default(now())
-}
-
-enum Role {
-  USER
-  THEM
-}
-
-enum Plan {
-  FREE
-  PRO
 }
