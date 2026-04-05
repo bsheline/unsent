@@ -1,122 +1,116 @@
-import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import prisma from "@/lib/db";
-import Anthropic from "@anthropic-ai/sdk";
-import { canGenerate } from "@/lib/subscription";
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || "",
-});
+import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import prisma from '@/lib/db';
+import { anthropic, systemPrompt } from '@/lib/anthropic';
+import { canGenerate } from '@/lib/subscription';
 
 export async function POST(req: Request) {
+  const { userId } = auth();
+
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
-    const { userId } = auth();
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
+    const { matchId, input, imageBase64 } = await req.json();
+
+    if (!matchId || (!input && !imageBase64)) {
+      return NextResponse.json({ error: 'matchId and either input or imageBase64 are required' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
     if (!user) {
-      return new NextResponse("User not found", { status: 404 });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    if (!canGenerate(user)) {
-      return new NextResponse("Free tier limit reached", { status: 403 });
-    }
-
-    const body = await req.json();
-    const { matchId, input } = body;
-
-    if (!matchId || !input) {
-      return new NextResponse("Missing required fields", { status: 400 });
-    }
-
-    // Verify the match belongs to the user
     const match = await prisma.match.findUnique({
-      where: {
-        id: matchId,
-        userId: userId,
-      },
+      where: { id: matchId },
       include: {
         messages: {
-          orderBy: { createdAt: "asc" },
-          take: 10,
-        }
-      }
+          orderBy: { createdAt: 'desc' },
+          take: 10, // last 10 messages
+        },
+      },
     });
 
-    if (!match) {
-      return new NextResponse("Match not found", { status: 404 });
+    if (!match || match.userId !== userId) {
+      return NextResponse.json({ error: 'Match not found' }, { status: 404 });
     }
 
-    // Increment generation count
-    await prisma.user.update({
-      where: { id: userId },
-      data: { generationsCount: { increment: 1 } },
-    });
+    // Subscription check logic - checking Free tier usage vs Pro
+    // Logic as per DESIGN.md: "Free tier: dashboard access, 3 lifetime suggestions... Pro tier: unlimited."
+    // Implementing simple count check for FREE users
+    if (!canGenerate(user)) {
+      const suggestionsCount = await prisma.message.count({
+        where: {
+          match: {
+            userId: user.id
+          },
+          role: 'USER', // We'll count 'USER' messages that were generated
+          chosen: true
+        }
+      });
 
-    // Save the incoming message
-    await prisma.message.create({
-      data: {
-        matchId,
-        role: "THEM",
-        content: input,
+      if (suggestionsCount >= 3) {
+         return NextResponse.json({ error: 'Free tier limit reached. Please upgrade to Pro.' }, { status: 403 });
       }
+    }
+
+    const styleProfile = user.styleProfile || "unknown, infer from conversation";
+    const formattedPrompt = systemPrompt.replace('{STYLE_PROFILE}', styleProfile);
+
+    // Format the conversation so far
+    let conversationContext = match.messages.reverse().map(msg => {
+      return `${msg.role === 'THEM' ? 'THEM' : 'ME'}: ${msg.content}`;
+    }).join('\n');
+
+    let userTurnText = `Conversation so far:\n${conversationContext}\n\nNew message from them:\n${input}\n\nSuggest 3 replies ranked by likely engagement.`;
+
+    let content: any[] = [];
+    if (imageBase64) {
+      content.push({
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: 'image/jpeg', // Assume jpeg for now, could be passed from client
+          data: imageBase64,
+        }
+      });
+    }
+    content.push({
+      type: 'text',
+      text: userTurnText
     });
 
-    const styleProfile = user?.styleProfile || "unknown, infer from conversation";
-
-    const systemPrompt = `You are a dating coach helping craft replies on dating apps.
-Your suggestions should feel natural, not AI-generated.
-
-User's communication style:
-${styleProfile}
-
-Return ONLY valid JSON matching this schema:
-{
-  "suggestions": [
-    { "reply": "string", "rationale": "string", "tone": "string" }
-  ]
-}
-No preamble, no markdown, no explanation outside the JSON.`;
-
-    const conversationHistory = match.messages.map(m => `${m.role === "USER" ? "ME" : "THEM"}: ${m.content}`).join("\n");
-
-    const userPrompt = `Conversation so far:
-${conversationHistory}
-
-New message from them:
-${input}
-
-Suggest 3 replies ranked by likely engagement.`;
-
-    const msg = await anthropic.messages.create({
-      model: "claude-3-opus-20240229",
+    const response = await anthropic.messages.create({
+      model: 'claude-3-haiku-20240307',
       max_tokens: 1024,
-      system: systemPrompt,
+      system: formattedPrompt,
       messages: [
-        { role: "user", content: userPrompt }
+        {
+          role: 'user',
+          content: content,
+        }
       ],
     });
 
-    let suggestions = [];
-    if (msg.content[0].type === "text") {
-        try {
-            const parsed = JSON.parse(msg.content[0].text);
-            suggestions = parsed.suggestions;
-        } catch (e) {
-            console.error("Failed to parse JSON from Claude", e);
-            // fallback if it fails
-            suggestions = [
-                { reply: "Failed to parse suggestions", rationale: "Error", tone: "error" }
-            ];
-        }
+    const completionText = response.content[0].type === 'text' ? response.content[0].text : '';
+
+    let parsedSuggestions = { suggestions: [] };
+    try {
+        parsedSuggestions = JSON.parse(completionText);
+    } catch(e) {
+        console.error("Error parsing JSON from Anthropic:", completionText);
+        return NextResponse.json({ error: 'Failed to generate valid suggestions' }, { status: 500 });
     }
 
-    return NextResponse.json({ suggestions });
+    return NextResponse.json(parsedSuggestions);
 
   } catch (error) {
-    console.error("[SUGGEST_POST]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    console.error('Error in suggest route:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
