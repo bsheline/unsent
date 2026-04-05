@@ -15,6 +15,7 @@ model User {
   email          String    @unique
   subscriptionId String?
   plan           String    @default("FREE")
+  generationsCount Int     @default(0)
   styleProfile   String?                          // JSON blob, updated from chosen replies
   matches        Match[]
   createdAt      DateTime  @default(now())

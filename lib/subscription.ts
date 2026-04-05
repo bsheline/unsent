@@ -1,5 +1,6 @@
-import { User } from '@prisma/client'
+import { User } from "@prisma/client";
 
 export function canGenerate(user: User): boolean {
-  return user.plan === 'PRO'
+  if (user.plan === "PRO") return true;
+  return user.generationsCount < 3;
 }
