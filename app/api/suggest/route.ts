@@ -1,12 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
-import Anthropic from "@anthropic-ai/sdk";
+import { anthropic, systemPrompt } from "@/lib/anthropic";
 import { canGenerate } from "@/lib/subscription";
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || "",
-});
 
 export async function POST(req: Request) {
   try {
@@ -24,10 +20,9 @@ export async function POST(req: Request) {
       return new NextResponse("Free tier limit reached", { status: 403 });
     }
 
-    const body = await req.json();
-    const { matchId, input } = body;
+    const { matchId, input, imageBase64 } = await req.json();
 
-    if (!matchId || !input) {
+    if (!matchId || (!input && !imageBase64)) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
@@ -55,30 +50,19 @@ export async function POST(req: Request) {
       data: { generationsCount: { increment: 1 } },
     });
 
-    // Save the incoming message
-    await prisma.message.create({
-      data: {
-        matchId,
-        role: "THEM",
-        content: input,
-      }
-    });
+    if (input) {
+      // Save the incoming message
+      await prisma.message.create({
+        data: {
+          matchId,
+          role: "THEM",
+          content: input,
+        }
+      });
+    }
 
-    const styleProfile = user?.styleProfile || "unknown, infer from conversation";
-
-    const systemPrompt = `You are a dating coach helping craft replies on dating apps.
-Your suggestions should feel natural, not AI-generated.
-
-User's communication style:
-${styleProfile}
-
-Return ONLY valid JSON matching this schema:
-{
-  "suggestions": [
-    { "reply": "string", "rationale": "string", "tone": "string" }
-  ]
-}
-No preamble, no markdown, no explanation outside the JSON.`;
+    const styleProfile = user.styleProfile || "unknown, infer from conversation";
+    const formattedPrompt = systemPrompt.replace('{STYLE_PROFILE}', styleProfile);
 
     const conversationHistory = match.messages.map(m => `${m.role === "USER" ? "ME" : "THEM"}: ${m.content}`).join("\n");
 
@@ -86,31 +70,45 @@ No preamble, no markdown, no explanation outside the JSON.`;
 ${conversationHistory}
 
 New message from them:
-${input}
+${input || "(Photo sent)"}
 
 Suggest 3 replies ranked by likely engagement.`;
 
+    let content: any[] = [];
+    if (imageBase64) {
+      content.push({
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: 'image/jpeg',
+          data: imageBase64,
+        }
+      });
+    }
+    content.push({
+      type: 'text',
+      text: userPrompt
+    });
+
     const msg = await anthropic.messages.create({
-      model: "claude-3-opus-20240229",
+      model: "claude-3-haiku-20240307",
       max_tokens: 1024,
-      system: systemPrompt,
+      system: formattedPrompt,
       messages: [
-        { role: "user", content: userPrompt }
+        { role: "user", content: content }
       ],
     });
 
     let suggestions = [];
-    if (msg.content[0].type === "text") {
-        try {
-            const parsed = JSON.parse(msg.content[0].text);
-            suggestions = parsed.suggestions;
-        } catch (e) {
-            console.error("Failed to parse JSON from Claude", e);
-            // fallback if it fails
-            suggestions = [
-                { reply: "Failed to parse suggestions", rationale: "Error", tone: "error" }
-            ];
-        }
+    const completionText = msg.content[0].type === 'text' ? msg.content[0].text : '';
+    try {
+        const parsed = JSON.parse(completionText);
+        suggestions = parsed.suggestions || [];
+    } catch (e) {
+        console.error("Failed to parse JSON from Claude", e);
+        suggestions = [
+            { reply: "Failed to parse suggestions", rationale: "Error", tone: "error" }
+        ];
     }
 
     return NextResponse.json({ suggestions });
