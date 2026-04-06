@@ -16,6 +16,17 @@ export default function SuggestionCard({ reply, rationale, tone }: SuggestionPro
     navigator.clipboard.writeText(reply);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+
+    // Asynchronously trigger style profile update
+    fetch('/api/style-profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ text: reply }),
+    }).catch(() => {
+      // Background request, ignore errors
+    });
   };
 
   const getToneColor = (tone: string) => {
