@@ -34,4 +34,4 @@ git pull
 
 echo "==> Invoking Orchestrator..."
 # Use jules with explicit repo to avoid inference errors
-jules new --repo bsheline/unsent "$(cat orchestration/ORCHESTRATOR.md orchestration/DESIGN.md)$TOKEN_INJECTION"
+jules new --repo bsheline/unsent "$(cat roles/ORCHESTRATOR.md roles/DESIGN.md)$TOKEN_INJECTION"
