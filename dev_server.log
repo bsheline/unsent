@@ -1,0 +1,147 @@
+
+> dating-assistant@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.0
+  - Local:        http://localhost:3000
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 1973ms
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 1566ms (180 modules)
+ ⨯ Error: @clerk/nextjs: Missing publishableKey. You can get your key at https://dashboard.clerk.com/last-active?path=api-keys.
+    at Object.throwMissingPublishableKeyError (webpack-internal:///(middleware)/./node_modules/@clerk/shared/dist/chunk-T4WHYQYX.mjs:179:13)
+    at eval (webpack-internal:///(middleware)/./node_modules/@clerk/nextjs/dist/esm/server/clerkMiddleware.js:46:71)
+    at assertKey (webpack-internal:///(middleware)/./node_modules/@clerk/nextjs/dist/esm/server/utils.js:165:5)
+    at eval (webpack-internal:///(middleware)/./node_modules/@clerk/nextjs/dist/esm/server/clerkMiddleware.js:44:79)
+    at Object.eval [as handler] (webpack-internal:///(middleware)/./node_modules/@clerk/nextjs/dist/esm/utils/debugLogger.js:44:19)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:202:31)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Object.wrap (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/async-storage/request-async-storage-wrapper.js:83:24)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:189:122)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/lib/trace/tracer.js:115:36)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 4.3s (252 modules)
+ GET /app/match/test_match_id 404 in 5073ms
+ GET /app/match/test_match_id 404 in 12ms
+ ○ Compiling /_not-found ...
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: @clerk/nextjs: Missing publishableKey. You can get your key at https://dashboard.clerk.com/last-active?path=api-keys.
+    at Object.throwMissingPublishableKeyError (webpack-internal:///(middleware)/./node_modules/@clerk/shared/dist/chunk-T4WHYQYX.mjs:179:13)
+    at eval (webpack-internal:///(middleware)/./node_modules/@clerk/nextjs/dist/esm/server/clerkMiddleware.js:46:71)
+    at assertKey (webpack-internal:///(middleware)/./node_modules/@clerk/nextjs/dist/esm/server/utils.js:165:5)
+    at eval (webpack-internal:///(middleware)/./node_modules/@clerk/nextjs/dist/esm/server/clerkMiddleware.js:44:79)
+    at Object.eval [as handler] (webpack-internal:///(middleware)/./node_modules/@clerk/nextjs/dist/esm/utils/debugLogger.js:44:19)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:202:31)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Object.wrap (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/async-storage/request-async-storage-wrapper.js:83:24)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:189:122)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/lib/trace/tracer.js:115:36)
+ ✓ Compiled /_not-found in 11.2s (1016 modules)
+ GET /app/match/test_match_id 404 in 865ms
+ GET /app/match/test_match_id 404 in 3ms
+ ⨯ Internal error: Error: @clerk/clerk-react: UserButton can only be used within the <ClerkProvider /> component. Learn more: https://clerk.com/docs/components/clerk-provider
+    at Object.throwMissingClerkProviderError (./node_modules/@clerk/shared/dist/chunk-T4WHYQYX.mjs:185:13)
+    at eval (./node_modules/@clerk/clerk-react/dist/chunk-LVLBRUHJ.mjs:101:18)
+    at useAssertWrappedByClerkProvider (./node_modules/@clerk/shared/dist/react/index.mjs:109:7)
+    at useAssertWrappedByClerkProvider (./node_modules/@clerk/clerk-react/dist/chunk-LVLBRUHJ.mjs:100:87)
+    at HOC (./node_modules/@clerk/clerk-react/dist/chunk-LVLBRUHJ.mjs:278:5)
+    at au (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:10446)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:15122
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:46505)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:50095)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42336
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42822)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:50095)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42336
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42822)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42336
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42822)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:50095)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42336
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42822)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:50095)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:50095)
+    at ac (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:11400)
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:14707)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at ab (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:11808)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16871
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+digest: "3211384499"
+ ⨯ Internal error: Error: @clerk/clerk-react: UserButton can only be used within the <ClerkProvider /> component. Learn more: https://clerk.com/docs/components/clerk-provider
+    at Object.throwMissingClerkProviderError (./node_modules/@clerk/shared/dist/chunk-T4WHYQYX.mjs:185:13)
+    at eval (./node_modules/@clerk/clerk-react/dist/chunk-LVLBRUHJ.mjs:101:18)
+    at useAssertWrappedByClerkProvider (./node_modules/@clerk/shared/dist/react/index.mjs:109:7)
+    at useAssertWrappedByClerkProvider (./node_modules/@clerk/clerk-react/dist/chunk-LVLBRUHJ.mjs:100:87)
+    at HOC (./node_modules/@clerk/clerk-react/dist/chunk-LVLBRUHJ.mjs:278:5)
+    at au (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:10446)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:15122
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:46505)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:50095)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42336
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42822)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:50095)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42336
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42822)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42336
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42822)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:50095)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42336
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:42822)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:50095)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:50095)
+    at ac (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:11400)
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:14707)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at ab (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:11808)
+    at /app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16871
+    at aw (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:16908)
+    at a_ (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:49776)
+    at aj (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:53793)
+    at aC (/app/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:52874)
+digest: "3211384499"
