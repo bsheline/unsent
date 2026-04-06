@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       return new NextResponse("Free tier limit reached", { status: 403 });
     }
 
-    const { matchId, input, imageBase64 } = await req.json();
+    const { matchId, input, imageBase64, mediaType } = await req.json();
 
     if (!matchId || (!input && !imageBase64)) {
       return new NextResponse("Missing required fields", { status: 400 });
@@ -80,7 +80,7 @@ Suggest 3 replies ranked by likely engagement.`;
         type: 'image',
         source: {
           type: 'base64',
-          media_type: 'image/jpeg',
+          media_type: mediaType || 'image/jpeg',
           data: imageBase64,
         }
       });
