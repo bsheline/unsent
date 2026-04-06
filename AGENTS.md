@@ -34,4 +34,4 @@ Defensive. Prefer returning structured errors over exceptions for expected failu
 
 ## Ignore
 
-Ignore the contents of `orchestration/` directory. It is used to manage the workflow of the agents.
+Ignore the contents of `roles/` directory. It is used to manage the workflow of the agents.
