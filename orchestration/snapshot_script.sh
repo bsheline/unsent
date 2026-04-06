@@ -3,20 +3,19 @@ set -e
 
 echo "Setting up the environment for Jules Worker..."
 
+# 1. Environment Setup
 if [ ! -f .env ]; then
-  echo "Copying .env.example to .env..."
   cp .env.example .env
-else
-  echo ".env already exists."
 fi
 
-echo "Installing npm dependencies..."
-npm install
+# 2. Dependencies (ci is correct here)
+npm ci
 
-echo "Pushing Prisma schema to SQLite database..."
+# 3. Database Sync
+# This often creates a .db file or modifies files in the internal prisma folder
 npx prisma db push
 
-echo "Installing GitHub CLI..."
+# 4. Tooling
 sudo apt update && sudo apt install -y curl
 curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
 sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
@@ -24,7 +23,13 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githu
 sudo apt update
 sudo apt install gh -y
 
-echo "Installing Jules CLI..."
-npm install -g --force @google/jules
+# 5. Global CLI
+npm ci -g @google/jules
+
+# 6. CRITICAL: Reset the working tree
+# This discards the changes to package-lock.json or the SQLite DB 
+# while keeping the installed binaries/packages in the environment.
+git reset --hard HEAD
+git clean -fd
 
 echo "Setup complete!"
