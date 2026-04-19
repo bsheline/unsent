@@ -136,6 +136,7 @@ export default function ConversationInput({ matchId, onSuggestions }: Conversati
             type="submit"
             disabled={(!input.trim() && !imageBase64) || isLoading}
             className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Send"
           >
             {isLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
