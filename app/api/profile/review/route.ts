@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import Anthropic from "@anthropic-ai/sdk";
 import { canGenerate } from "@/lib/subscription";
+import { MAX_TEXT_LENGTH } from "@/lib/constants";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || "",
@@ -29,6 +30,10 @@ export async function POST(req: Request) {
 
     if (!bio) {
       return new NextResponse("Bio is required", { status: 400 });
+    }
+
+    if (bio.length > MAX_TEXT_LENGTH) {
+      return new NextResponse("Bio too long", { status: 400 });
     }
 
     // Increment generation count
