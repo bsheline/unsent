@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import { anthropic } from "@/lib/anthropic";
+import { MAX_TEXT_LENGTH } from "@/lib/constants";
 
 export async function POST(req: Request) {
   try {
@@ -14,6 +15,10 @@ export async function POST(req: Request) {
 
     if (!text) {
       return new NextResponse("Missing text", { status: 400 });
+    }
+
+    if (text.length > MAX_TEXT_LENGTH) {
+      return new NextResponse("Text too long", { status: 400 });
     }
 
     const user = await prisma.user.findUnique({ where: { id: userId } });

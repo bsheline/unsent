@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import { anthropic, systemPrompt } from "@/lib/anthropic";
 import { canGenerate } from "@/lib/subscription";
+import { MAX_TEXT_LENGTH, MAX_IMAGE_LENGTH } from "@/lib/constants";
 
 export async function POST(req: Request) {
   try {
@@ -24,6 +25,14 @@ export async function POST(req: Request) {
 
     if (!matchId || (!input && !imageBase64)) {
       return new NextResponse("Missing required fields", { status: 400 });
+    }
+
+    if (input && input.length > MAX_TEXT_LENGTH) {
+      return new NextResponse("Input too long", { status: 400 });
+    }
+
+    if (imageBase64 && imageBase64.length > MAX_IMAGE_LENGTH) {
+      return new NextResponse("Image too large", { status: 400 });
     }
 
     // Verify the match belongs to the user
